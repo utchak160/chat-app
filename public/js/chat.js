@@ -4,9 +4,34 @@ socket.on('message', (message) => {
     console.log(message);
 });
 
+//Elements
 const messageForm = document.querySelector('#msgform');
 const messageInput = messageForm.querySelector('input');
 const sendButton = messageForm.querySelector('button');
+const locationButton = document.querySelector('#send-location');
+const messages = document.querySelector('#messages');
+const status = document.querySelector('#status');
+
+
+//Templates
+const messageTemplate = document.querySelector('#message-template').innerHTML;
+const linkTemplate = document.querySelector('#link-template').innerHTML;
+
+socket.on('message', (message) => {
+    console.log(message);
+    const html = Mustache.render(messageTemplate, {
+        message
+    });
+    messages.insertAdjacentHTML('beforeend', html);
+})
+
+socket.on('locationMessage', (url) => {
+    console.log(url);
+    const linkHTML = Mustache.render(linkTemplate, {
+        url
+    });
+    messages.insertAdjacentHTML('beforeend', linkHTML);
+})
 
 messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -24,17 +49,12 @@ messageForm.addEventListener('submit', (e) => {
     });
 });
 
-const locationButton = document.querySelector('#send-location');
 
 locationButton.addEventListener('click', (e) => {
     e.preventDefault();
-    const status = document.querySelector('#status');
-    const mapLink = document.querySelector('#map-link');
     status.textContent = 'loading...';
     locationButton.setAttribute('disabled', 'disabled');
 
-    mapLink.href = '';
-    mapLink.textContent = '';
     if(!navigator.geolocation) {
         return alert('Geolocation is not supported by your browser');
     }
