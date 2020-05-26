@@ -22,11 +22,11 @@
 
 <script id="message-template" type="text/html">
 <div>
-    <p>{{message}}</p>
+    <p>{{createdAt}} - {{message}}</p>
 </div>
 </script>
 <script id="link-template" type="text/html">
-    <p><a href="{{url}}" target="_blank">My Location</a></p>
+    <p>{{createdAt}} - <a href="{{url}}" target="_blank">My Location</a></p>
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
