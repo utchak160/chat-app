@@ -15,7 +15,7 @@ const addUsers = ({id, username, room}) => {
     //Check for existing user
     const existingUser = users.find((user) => {
         return user.room === room && user.username === username
-    })
+    });
 
     //Validate username
     if (existingUser) {
@@ -28,7 +28,7 @@ const addUsers = ({id, username, room}) => {
     const user = {id, username, room}
     users.push(user)
     return {user}
-}
+};
 
 const removeUser = (id) => {
     const index = users.findIndex((user) => user.id === id)
@@ -42,22 +42,24 @@ const removeUser = (id) => {
     }
 };
 
-addUsers({
-    id: 1,
-    username: 'Utkarsh',
-    room: 'Yo'
-});
+const getUser = (id) => {
+    return users.find((user) => user.id === id);
+};
+
+const getUserInRoom = (room) => {
+    room.trim().toLowerCase();
+    return users.filter((user) => user.room === room);
+};
 
 
-const res = addUsers({
-    id: 2,
-    username: 'Utkrsh',
-    room: 'Yo'
-});
+module.exports = {
+    addUsers,
+    getUser,
+    getUserInRoom,
+    removeUser
+};
 
-console.log(res);
 
-console.log(users);
 
 
 
