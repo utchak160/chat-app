@@ -47,7 +47,6 @@ const getUser = (id) => {
 };
 
 const getUserInRoom = (room) => {
-    room.trim().toLowerCase();
     return users.filter((user) => user.room === room);
 };
 

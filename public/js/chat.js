@@ -1,7 +1,7 @@
 const socket = io();
 
-socket.on('message', (message) => {
-    console.log(message);
+socket.on('message', (message, username) => {
+    console.log(message, username);
 });
 
 //Elements
@@ -16,24 +16,60 @@ const status = document.querySelector('#status');
 //Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const linkTemplate = document.querySelector('#link-template').innerHTML;
+const sideTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 //Options
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true});
 
+const autoScroll = () => {
+    //New message element
+    const $newMessage = messages.lastElementChild
+
+    //Height of the new message
+    const newMessageStyle = getComputedStyle($newMessage)
+    const newMessageMargin = parseInt(newMessageStyle.marginBottom)
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
+
+    //Visible height
+    const visibleHeight = messages.offsetHeight
+
+    //Height of message container
+    const containerHeight = messages.scrollHeight
+
+    //How far I have scrolled
+    const scrollOffset = messages.scrollTop + visibleHeight
+
+    if (containerHeight - newMessageHeight <= scrollOffset) {
+        messages.scrollTop = messages.scrollHeight
+    }
+}
+
 socket.on('message', (message) => {
     const html = Mustache.render(messageTemplate, {
         message: message.text,
+        UserName: message.name,
         createdAt: moment(message.createdAt).format('h:mm a')
     });
     messages.insertAdjacentHTML('beforeend', html);
+    autoScroll();
+})
+
+socket.on('roomData', ({room, users}) => {
+    const html = Mustache.render(sideTemplate, {
+        room: room,
+        users: users
+    })
+    document.querySelector('#sidebar').innerHTML = html
 })
 
 socket.on('locationMessage', (url) => {
     const linkHTML = Mustache.render(linkTemplate, {
         url: url.url,
+        UserName: url.name,
         createdAt: moment(url.createdAt).format('h:mm a')
     });
     messages.insertAdjacentHTML('beforeend', linkHTML);
+    autoScroll()
 })
 
 messageForm.addEventListener('submit', (e) => {
@@ -73,4 +109,9 @@ locationButton.addEventListener('click', (e) => {
     })
 });
 
-socket.emit('join', { username, room });
+socket.emit('join', { username, room }, (error) => {
+    if (error) {
+        alert(error);
+        location.href = '/';
+    }
+});
